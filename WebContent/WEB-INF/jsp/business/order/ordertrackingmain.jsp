@@ -60,6 +60,8 @@
 						success: function(data){							
 							fnCallback(data);
 
+							//setOptons();
+							
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 						
@@ -81,6 +83,7 @@
 					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//6
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
 					{"data": "team", "defaultContent" : '', "className" : 'td-center'},//8
+					{"data": null, "defaultContent" : '', "className" : 'td-center'},//9
 					
 				],
 				"columnDefs":[
@@ -106,17 +109,17 @@
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
-		    			name = jQuery.fixedWidth(name,48);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,42);//true:两边截取,左边从汉字开始
 		    			
 		    			var lastCheceked = '<input type="hidden"  name="lastCheceked" id="lastCheceked" value="' + row["lastCheceked"] + '" />';
 		    			
 		    			return name + lastCheceked;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
-		    			var ready = row['readyDate'];
+		    			var readyDate = row['readyDate'];
 		    			var flag = row['finishFlag'];
 		    			var rtnValue = ''
-		    			if(ready == ''){
+		    			if(readyDate == ''){
 		    				if(flag == 'B'){
 
 		    					rtnValue = '已入库';	
@@ -125,10 +128,10 @@
 		    				}
 		    			}else{
 		    				var today = shortToday();
-		    				if(ready < today)
-		    					rtnValue = '<span class="error">'+ready+'</span>';
+		    				if(readyDate < today)
+		    					rtnValue = '<span class="error">'+readyDate+'</span>';
 		    				else
-		    					rtnValue = 	ready;
+		    					rtnValue = 	readyDate;
 		    				
 		    			}
 		    			
@@ -137,6 +140,28 @@
 		    		{"targets":6,"render":function(data, type, row){
 		    			return floatToNumber(data);
 		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    			var rtn = "";
+		    			var rowIndex = row["rownum"] - 1;
+		    			var importantFlag = row['importantFlag'];
+		    			var YSId = row['YSId'];
+		    			
+		    			var selected = '';
+		    			if(importantFlag == '1'){
+		    				selected = 'selected';
+		    			}
+		    			var txt = '<select  name="lines['+rowIndex+'].important"  '+
+		    				' id="lines'+rowIndex+'.important" '+
+		    				' onchange="setImportant(this.value,\''+YSId+'\',\''+rowIndex+'\')"   '+
+		    				' class="short option" style="text-align: center;"> '+
+		    				' <option value=\'0\'>一般</option>  '+
+						    ' <option '+selected+' value=\'1\'>重要</option> '+
+		    				' </select> ';
+		    			
+			    		rtn = txt;
+		    				
+		    			return rtn;
+                    }},
 		    		{
 		    			"orderable":false,"targets":[]
 		    		},
@@ -148,6 +173,31 @@
 	         		         	
 			});
 	}
+	
+	//重要性选择
+	function setImportant(importantFlag,YSId,rowIndex) {
+		
+		var actionUrl = "${ctx}/business/orderTrack?methodtype=setOrderForProduce"
+			+"&YSId="+YSId+"&importantFlag="+importantFlag;
+
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
+			success : function(data) {
+			
+				var rtnValue = data['message'];
+				$().toastmessage('showWarningToast', "数据保存成功!");
+				reload();
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {				
+				//alert(textStatus);
+			}
+		});			
+			
+	};
 	
 	function doShow(YSId,materialId) {
 
@@ -187,6 +237,12 @@
 
 		foucsInit();
 		
+		var i = 0;	
+		<c:forEach var="list" items="${important}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
 		initEvent();
 		
 		//$('#mateFlag').hide();//
@@ -202,6 +258,12 @@
 		
 	})	
 
+		
+	function setOptons(){
+		
+		$(".option").html(options);	
+	}
+	
 	function removeErrorClass(rowIndex){
 		$('#lines'+rowIndex+'\\.produceLine').removeClass("error");
 	}
@@ -362,11 +424,12 @@
 				
 				<tr>
 					<td width=""></td> 
-					<td class="label"> 快捷查询11：</td>
+					<td class="label"> 快捷查询：</td>
 					<td>
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask('A');"   id="defutBtnA">ALL</a>
 						<a  class="DTTT_button box" onclick="doSearchCustomer('B');"  		  id="defutBtnU">料已备齐</a>
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前跟踪</a>&nbsp;
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前跟踪</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('P');"  id="defutBtnP">卡点</a>
 						
 					</td>
 					
@@ -400,10 +463,13 @@
 						</span>			
 					</td> 
 					<td width="100px"></td>
-					<td class="label"></td>
+					<td class="label">重要性：</td>
 					<td colspan="">
-												 
-					</td>
+						<a id="defutBtnmIY"  class="DTTT_button box" onclick="doSearchCurrentTask2('IY');">
+							重要</a>	</td>
+					<td colspan="">
+						<a id="defutBtnmIN"  class="DTTT_button box" onclick="doSearchCurrentTask2('IN');">
+							一般</a>	</td>
 				</tr>
 			</table>
 
@@ -420,13 +486,14 @@
 					<tr>
 						<th style="width: 40px;">型号</th>
 						<th style="width: 70px;">耀升编号</th>
-						<th style="width: 150px;">产品编号</th>
+						<th style="width: 120px;">产品编号</th>
 						<th>产品名称</th>
 						<th style="width: 40px;">客户</th>
 						<th style="width: 60px;">装配物料<br/>备齐时间</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 50px;">业务组</th>
+						<th style="width: 50px;">重要性</th>
 					</tr>
 				</thead>
 			</table>

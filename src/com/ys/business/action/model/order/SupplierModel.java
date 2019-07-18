@@ -27,6 +27,14 @@ public class SupplierModel extends BaseModel {
 	ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private B_SupplierData supplierBasicInfoData = new B_SupplierData();
 	private B_SupplierData supplier = new B_SupplierData();
+	private String[] issuesList;
+	  
+	public String[] getIssuesList() {
+        return issuesList;
+    }
+    public void setIssuesList(String[] issuesList) {
+        this.issuesList = issuesList;
+    }
 	
 	public String getSubId() {
 		return this.subId;

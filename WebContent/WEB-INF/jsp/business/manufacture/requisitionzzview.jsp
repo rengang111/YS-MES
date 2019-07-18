@@ -330,11 +330,11 @@
         	},
 			"columns" : [
 		        	{"data": null,"className":"dt-body-center"//0
-				}, {"data": "YSId","className":"td-left", "defaultContent" : ''//5
-				}, {"data": "materialId","className":"td-left"//1
-				}, {"data": "materialName",						//2
-				}, {"data": "unit","className":"td-center"		//3单位
-				}, {"data": "manufactureQuantity","className":"td-right"//4
+				}, {"data": "YSId","className":"td-left", "defaultContent" : ''//1
+				}, {"data": "materialId","className":"td-left"//2
+				}, {"data": "materialName",						//3
+				}, {"data": "unit","className":"td-center"		//4单位
+				}, {"data": "purchaseQuantity","className":"td-right"//5
 				}, {"data": null, "defaultContent" : ''	//6 
 				}
 			],
@@ -352,7 +352,7 @@
                 }},
 				{"targets":5,"render":function(data, type, row){	    			
 	    			
-	    			var qty = floatToCurrency(row["manufactureQuantity"]);			
+	    			var qty = floatToCurrency(row["purchaseQuantity"]);			
 	    			return qty;				 
                 }}
 			]

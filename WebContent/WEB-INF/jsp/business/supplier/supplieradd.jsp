@@ -255,6 +255,13 @@ function doDelete() {
 					<form:input path="supplier.maxdelivery"  class="short num"/>天</td>
 
 			</tr>
+			<tr>	
+				<td class="label" width="100px">供应商问题：</td> 
+				<td colspan="5">
+					<form:checkboxes path="supplier.issues" 
+						items="${issuesList}" class="checkbox" />	</td>
+
+			</tr>
 		</table>
 
 	</fieldset>	

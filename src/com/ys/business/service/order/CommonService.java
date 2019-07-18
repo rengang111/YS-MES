@@ -1451,4 +1451,18 @@ public class CommonService extends BaseService {
 		return rtnData;
 		
 	}
+	
+	public List<String> getListCheckBox(String type, String parentCode) throws Exception {
+		DicUtil util = new DicUtil();
+		ArrayList<ArrayList<String>> dicList = null;
+		List<String> rtnData = new ArrayList<String>();
+		
+		dicList = util.getSameParentGroupValue(type, parentCode, false);
+		for(ArrayList<String>rowData:dicList) {
+			rtnData.add(rowData.get(1));
+		}
+		
+		return rtnData;
+	}
+	
 }

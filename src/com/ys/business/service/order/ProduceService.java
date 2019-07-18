@@ -1061,33 +1061,21 @@ public class ProduceService extends CommonService  {
 		String[] produceList = getGroupParentCodeDetail();
 		
 		reqModel.setProduceList(produceList);
-		model.addAttribute("produceList",getListString(DicUtil.DIC_PRODUCE, ""));
+		model.addAttribute("produceList",getListCheckBox(DicUtil.DIC_PRODUCE, ""));
 
 		model.addAttribute("produce",util.getListOption(DicUtil.DIC_PRODUCE, ""));
 		model.addAttribute("personnel",util.getListOption(DicUtil.DIC_PERSONNEL, ""));
 				
 	}
 	
-	public List<String> getListString(String type, String parentCode) throws Exception {
-		DicUtil util = new DicUtil();
-		ArrayList<ArrayList<String>> dicList = null;
-		List<String> rtnData = new ArrayList<String>();
-		
-		dicList = util.getSameParentGroupValue(type, parentCode, false);
-		for(ArrayList<String>rowData:dicList) {
-			//ListOption option = new ListOption(rowData.get(0), rowData.get(1));
-			rtnData.add(rowData.get(1));
-		}
-		
-		return rtnData;
-	}
+
 
 	public void edutGroupTopInit() throws Exception{
 		
 		String[] produceList = getGroupParentCodeDetail();
 		
 		reqModel.setProduceList(produceList);
-		model.addAttribute("produceList",getListString(DicUtil.DIC_PRODUCE, ""));		
+		model.addAttribute("produceList",getListCheckBox(DicUtil.DIC_PRODUCE, ""));		
 
 		model.addAttribute("produce",util.getListOption(DicUtil.DIC_PRODUCE, ""));
 		model.addAttribute("personnel",util.getListOption(DicUtil.DIC_PERSONNEL, ""));

@@ -133,7 +133,23 @@ $(document).ready(function() {
 		}
 		
 		$('#supplier\\.shortname').val($('#supplier\\.shortname').val().toUpperCase());
-
+		
+		var collection = $(".checkbox");
+		var str = '';
+		var firstFlag = true;
+	    $.each(collection, function () {
+	    	 var isChecked = $(this).is(":checked");
+	    	 if(isChecked){
+				if(collection){
+					str += $(this).val();
+				}else{
+			    	 str +=  "," + $(this).val() ;						
+				}
+				collection =false;
+	    	 }
+	    });
+	    $('#supplier\\.issues').val(str);
+	    
 		$('#doSave').attr("disabled","true").removeClass("DTTT_button");
 		
 		$('#supplierBasicInfo').attr("action", "${ctx}/business/supplier?methodtype=insert");
@@ -190,6 +206,7 @@ function checkDeliveryDate(){
 	<form:form modelAttribute="formModel" id="supplierBasicInfo">		
 		
 		<form:hidden path="supplier.recordid" />
+		<form:hidden path="supplier.issues" />
 		
 	<fieldset>		
 		<legend>供应商-综合信息</legend>
@@ -263,6 +280,13 @@ function checkDeliveryDate(){
 				<td class="label" width="100px">最长交期：</td> 
 				<td colspan="3">
 					<form:input path="supplier.maxdelivery"  class="short num"/>天</td>
+			</tr>
+			<tr>	
+				<td class="label" width="100px">供应商问题：</td> 
+				<td colspan="5">
+					<form:checkboxes path="issuesList" 
+						items="${issuesList}" class="checkbox" />	</td>
+
 			</tr>
 		</table>
 

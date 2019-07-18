@@ -126,15 +126,72 @@ public class OrderTrackAction extends BaseAction {
 				dataMap = getUnStockinContractList();
 				printOutJsonObj(response, dataMap);
 				break;
-				
-				
+			case "setOrderForProduce"://设置重要性
+				dataMap = doSetOrderForProduce();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "doSavePoint"://设置卡点
+				dataMap = doSavePoint();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "doCansolPoint"://取消卡点
+				dataMap = doCansolPoint();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;		
 	}	
-	
 
+	public HashMap<String, Object> doSetOrderForProduce(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			reviewService.setImportantByYsid();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> doSavePoint(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			reviewService.setKeyPointById();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		
+		return dataMap;
+	}
+	
+	
+	public HashMap<String, Object> doCansolPoint(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			reviewService.cansolPointById();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		
+		return dataMap;
+	}
 	
 	@SuppressWarnings("unchecked")
 	private HashMap<String, Object> orderTrackingForStorage(){

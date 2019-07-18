@@ -146,7 +146,7 @@ public class OrderTrackService extends CommonService {
 			//未安排
 			having1 += " AND produceLineFlag = '0' AND filterFlag='0' ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
-			//当前任务
+			//当前跟踪
 			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' ";//只显示当前任务
 			orderby = " e.produceLine,e.sortNo+0 ";
 			
@@ -156,6 +156,20 @@ public class OrderTrackService extends CommonService {
 		}else if(("E").equals(searchFlag)){
 			//异常数据
 			having1 += " AND filterFlag='1' ";
+		}else if(("IY").equals(searchFlag)){
+			//重要性
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' AND importantFlag='1' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
+		}else if(("IN").equals(searchFlag)){
+			//重要性
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' AND importantFlag='0' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
+			
+		}else if(("P").equals(searchFlag)){
+			//卡点
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' AND keyPoint='Y' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
+			
 		}
 		
 		//*** 常规订单，配件单
@@ -176,7 +190,7 @@ public class OrderTrackService extends CommonService {
 		}else if(("Z").equals(mateType)){
 			having1 += " AND zzDate <'"+CalendarUtil.getToDay()+"'";	
 		}
-		
+			
 		userDefinedSearchCase.put("team", team);	
 		userDefinedSearchCase.put("orderType", orderType);	
 		baseQuery = new BaseQuery(request, dataModel);	
@@ -570,9 +584,25 @@ public class OrderTrackService extends CommonService {
 			setMaterialFinished(YSId,"0",zpTime);//当前跟踪	
 		}
 		
+		getKeyPointByYSId(YSId);
+		
 		getOrderDetailByYSId(YSId);
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void getKeyPointByYSId(String YSId) throws Exception{
+		
+		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		
+		if(list.size() > 0){
+			
+			B_ProducePlanData plan = list.get(0); 
+			reqModel.setPlan(plan);
+			
+		}
+		
+	}
 	
 	private ArrayList<HashMap<String, String>> getZPTimeFromContract(String YSId) throws Exception{
 		
@@ -625,6 +655,7 @@ public class OrderTrackService extends CommonService {
 
 		model.addAttribute("yewuzu",list);
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+		model.addAttribute("important",util.getListOption(DicUtil.TRACKINGIMPORTANT, ""));
 	}
 	
 
@@ -700,4 +731,89 @@ public class OrderTrackService extends CommonService {
 		return modelMap;
 	}
 	
+	/**
+	 * 将跟踪的订单设置为重要或者不重要。
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public void setImportantByYsid() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		String importantFlag = request.getParameter("importantFlag");
+		
+		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		
+		if(list.size() > 0){
+			
+			B_ProducePlanData plan = list.get(0); 
+			plan.setImportantflag(importantFlag);//1:重要；0:不重要
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"update",userInfo);
+			copyProperties(plan,commData);	
+			
+			new B_ProducePlanDao().Store(plan);	
+		}
+		
+	}
+	
+
+	/**
+	 * 设置卡点
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public void setKeyPointById() throws Exception{
+
+		B_ProducePlanData web = reqModel.getPlan();
+		String YSId = request.getParameter("YSId");
+		
+		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		
+		if(list.size() > 0){
+			
+			B_ProducePlanData plan = list.get(0); 
+			plan.setKeypoint("Y");//有效
+			plan.setPointdate(web.getPointdate());
+			plan.setPointremarks(replaceTextArea(web.getPointremarks()));
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"update",userInfo);
+			copyProperties(plan,commData);	
+			
+			new B_ProducePlanDao().Store(plan);	
+		}
+		
+	}
+	
+	/**
+	 * 取消卡点
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public void cansolPointById() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		
+		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		
+		if(list.size() > 0){
+			
+			B_ProducePlanData plan = list.get(0); 
+			plan.setKeypoint("N");//无效
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"update",userInfo);
+			copyProperties(plan,commData);	
+			
+			new B_ProducePlanDao().Store(plan);	
+		}
+		
+	}
 }

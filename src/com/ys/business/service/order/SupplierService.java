@@ -76,8 +76,7 @@ public class SupplierService extends CommonService {
 		super.request = request;
 		super.userInfo = userInfo;
 		super.session = session;
-		
-		
+				
 	}
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, HttpSession session) throws Exception {
 
@@ -110,6 +109,11 @@ public class SupplierService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
+		String issuesFlag = request.getParameter("issuesFlag");
+		if(notEmpty(issuesFlag))
+				issuesFlag = URLDecoder.decode(issuesFlag,"utf-8");
+		userDefinedSearchCase.put("issues", issuesFlag);
+		
 		if(type == null || type.equals("")){
 			userDefinedSearchCase.put("keyword1", key1);
 			userDefinedSearchCase.put("keyword2", key2);
@@ -141,10 +145,10 @@ public class SupplierService extends CommonService {
 
 	public Model doAddInit() {
 
-
 		try {			
 			reqModel.setCountryList(getProvinceList());
 			reqModel.setTypeList(util.getListOption(DicUtil.SUPPLIER_TYPE, ""));	
+			model.addAttribute("issuesList",getListCheckBox(DicUtil.SUPPLIERISSUES, ""));
 
 		}
 		catch(Exception e) {
@@ -250,43 +254,7 @@ public class SupplierService extends CommonService {
 		return data;
 	}
 
-	private ArrayList<HashMap<String, String>> arrangeUserList(ArrayList<HashMap<String, String>> data) {
-		ArrayList<String> userList = new ArrayList<String>();
-		HashMap<String, String>rowDataBackup = null;
-		HashMap<String, String>rowData = null;
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
-		
-		for(int i = 0; i < data.size(); i++) {
-			rowData = data.get(i);
-			String userName = rowData.get("userName");
-			if (rowDataBackup == null) {
-				rowDataBackup = rowData;
-			}
-			if (rowData.get("id").equals(rowDataBackup.get("id"))) {
-				if (userName != null && !userName.equals("")) {
-					userList.add(userName);
-				}
-			} else {
-				rowDataBackup.put("userName", getUserList(userList));
-				rtnData.add(rowDataBackup);
-				rowDataBackup = rowData;
-				userList = new ArrayList<String>();
-				if (userName != null && !userName.equals("")) {
-					userList.add(userName);
-				}
-
-			}
-		}
-		
-		if (rowDataBackup != null) {
-			rowData.put("userName", getUserList(userList));
-			rtnData.add(rowDataBackup);
-		}
-
-		
-		return rtnData;
-		
-	}
+	
 	
 	private ArrayList<HashMap<String, String>> makeAddress(ArrayList<HashMap<String, String>> data) {
 
@@ -300,19 +268,14 @@ public class SupplierService extends CommonService {
 		return rtnData;
 	}
 	
-	private boolean isDataExist(B_SupplierData dbData) {
-		boolean rtnValue = false;
+	
+	public void supplierEditInit() throws Exception{
+
+		String key = request.getParameter("key");
+		getSupplierBaseInfo(key);
+
 		
-		try {
-			B_SupplierDao dao = new B_SupplierDao();
-			dao.FindByPrimaryKey(dbData);
-			rtnValue = true;
-		}
-		catch(Exception e) {
-			
-		}
-		return rtnValue;
-		
+		model.addAttribute("issuesList",getListCheckBox(DicUtil.SUPPLIERISSUES, ""));
 	}
 	
 	public Model getSupplierBaseInfo(String key) throws Exception {
@@ -328,6 +291,11 @@ public class SupplierService extends CommonService {
 		reqModel.setKeyBackup(dbData.getRecordid());
 		reqModel.setTypeList(util.getListOption(DicUtil.SUPPLIER_TYPE, ""));	
 
+		if(notEmpty(dbData.getIssues())){
+			String[] issuesList = dbData.getIssues().split(",");
+			reqModel.setIssuesList(issuesList);
+		}
+		
 		model.addAttribute(reqModel);
 		
 		return model;
@@ -565,4 +533,33 @@ public class SupplierService extends CommonService {
 		
 		return dataMap;
 	}	
+	
+	public void suppliserSearchInit() throws Exception{
+		
+		model.addAttribute("issuesBtList",util.getListOption(DicUtil.SUPPLIERISSUES, ""));
+	}
+	
+	public ArrayList<HashMap<String, String>> getSupplierIssuesList() throws Exception{
+		ArrayList<HashMap<String, String>> list = null;
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getPuchaserByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("dicTypeId", "供应商问题");		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			list = dataModel.getYsViewData();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("rownum", String.valueOf(list.size()+1));
+			map.put("dicName", "ALL");
+			map.put("dicId", "999");
+			map.put("SortNo", "999");
+			list.add(0, map);
+		
+		}
+
+		return list;
+		
+	}
 }

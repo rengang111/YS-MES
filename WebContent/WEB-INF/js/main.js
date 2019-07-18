@@ -808,12 +808,16 @@ function replaceTextarea(str){
 	return str;
 } 
 
-function replaceTextarea1(str){
-	var reg=new RegExp("\r\n","g");
-	var reg1=new RegExp(" ","g");
+function replaceTextarea2(str){
+	var reg=new RegExp("\n\r","g");
+	var reg1=new RegExp("\r","g");
+	var reg2=new RegExp("\r\n","g");
+	var reg3=new RegExp("\n","g");
 	
-	str = str.replace(reg,"＜br＞");
-	str = str.replace(reg1,"＜p＞");
+	str = str.replace(reg,"<br>");
+	str = str.replace(reg1,"<br>");
+	str = str.replace(reg2,"<br>");
+	str = str.replace(reg3,"<br>");
 	
 	return str;
 }

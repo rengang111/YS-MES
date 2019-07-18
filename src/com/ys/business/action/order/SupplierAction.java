@@ -62,7 +62,6 @@ public class SupplierAction extends BaseAction {
 			}
 		}
 		
-		
 		switch(type) {
 			case "":
 			case "init":
@@ -139,14 +138,17 @@ public class SupplierAction extends BaseAction {
 	}	
 	
 	public void doInit(String formId,HttpSession session){	
-		
+		try {
+			service.suppliserSearchInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public HashMap<String, Object> doSearch(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		try {
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 			//优先执行查询按钮事件,清空session中的查询条件
 			String sessionFlag = request.getParameter("sessionFlag");
 			if(("false").equals(sessionFlag)){
@@ -211,16 +213,12 @@ public class SupplierAction extends BaseAction {
 	
 	public void doUpdateInit(){
 
-		SupplierModel dataModel = new SupplierModel();
-		String key = request.getParameter("key");
 		try {
-			model = service.getSupplierBaseInfo(key);
+			service.supplierEditInit();
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("发生错误，请联系系统管理员");
+			e.printStackTrace();
 		}
-		//model.addAttribute("DisplayData", dataModel);
 	}
 	public SupplierModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		SupplierModel model = new SupplierModel();

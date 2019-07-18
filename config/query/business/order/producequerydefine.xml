@@ -323,7 +323,7 @@
       <f name="IFNULL(e.readyDate,'')" alias="readyDate" ctype="" />
       <f name="IFNULL(e.remarks,'')" alias="remarks" ctype="" />
       <f name="IFNULL(e.produceTeam,'')" alias="produceTeam" ctype="" />
-      <f name="IFNULL(e.startFlag,'')" alias="startFlag" ctype="" />
+      <f name="IFNULL(e.startFlag,'N')" alias="startFlag" ctype="" />
     </select>
     <from>
       (

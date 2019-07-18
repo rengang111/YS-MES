@@ -90,6 +90,10 @@
       <f name="e.dzDate" alias="" ctype="" />
       <f name="e.zzDate" alias="" ctype="" />
       <f name="e.bzDate" alias="" ctype="" />
+      <f name="IFNULL(e.importantFlag,'0')" alias="importantFlag" ctype="" />
+      <f name="IFNULL(e.keyPoint,'N')" alias="keyPoint" ctype="" />
+      <f name="IFNULL(e.pointRemarks,'')" alias="pointRemarks" ctype="" />
+      <f name="IFNULL(e.pointDate,'')" alias="pointDate" ctype="" />
     </select>
     <from>
       (

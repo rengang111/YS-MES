@@ -157,7 +157,7 @@ function requisitionAjaxFn(scrollHeight) {
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "unit","className":"td-center"		//3单位
-				}, {"data": "manufactureQuantity","className":"td-right"//4
+				}, {"data": "purchaseQuantity","className":"td-right"//4
 				}, {"data": null, "defaultContent" : ''	//6 
 				}
 			],
@@ -175,7 +175,7 @@ function requisitionAjaxFn(scrollHeight) {
                 }},
 				{"targets":5,"render":function(data, type, row){	    			
 	    			
-	    			var qty = floatToCurrency(row["manufactureQuantity"]);			
+	    			var qty = floatToCurrency(row["purchaseQuantity"]);			
 	    			return qty;				 
                 }}
 			]

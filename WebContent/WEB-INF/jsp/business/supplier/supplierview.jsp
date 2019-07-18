@@ -525,6 +525,11 @@ function inputDateInit(){
 					<td class="label" width="100px">最长交期：</td>
 					<td>&nbsp;${formModel.supplier.maxdelivery}&nbsp;天</td>
 				</tr>
+				<tr>
+					<td class="label">供应商问题： </td>
+					<td colspan=5>&nbsp;${formModel.supplier.issues}</td>
+	
+				</tr>
 			</table>
 
 		</fieldset>	

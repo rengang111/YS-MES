@@ -7,6 +7,7 @@ import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderReviewData;
+import com.ys.business.db.data.B_ProducePlanData;
 import com.ys.business.db.data.B_PurchaseOrderDeliveryDateHistoryData;
 import com.ys.util.basequery.common.BaseModel;
 
@@ -21,7 +22,15 @@ public class OrderTrackModel extends BaseModel {
 	private B_OrderReviewData review = new B_OrderReviewData();
 	private B_PurchaseOrderDeliveryDateHistoryData deliveryDate = new B_PurchaseOrderDeliveryDateHistoryData();
 	private List<B_OrderReviewData> reviewLines;
-
+	private B_ProducePlanData plan;
+	
+	public B_ProducePlanData getPlan() {
+		return this.plan;
+	}
+	public void setPlan(B_ProducePlanData plan) {
+		this.plan = plan;
+	}
+	
 	public B_PurchaseOrderDeliveryDateHistoryData getDeliveryDate() {
 		return this.deliveryDate;
 	}

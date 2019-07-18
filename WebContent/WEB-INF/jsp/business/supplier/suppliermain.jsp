@@ -14,6 +14,12 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var issuesFlag = encodeURI(encodeURI($('#issuesFlag').val()));
+		
+		var actionUrl = "${ctx}/business/supplier?methodtype=search&type="+type+"&sessionFlag="+sessionFlag;
+		
+		actionUrl += "&issuesFlag="+issuesFlag;
+
 		var t = $('#TSupplier').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -28,7 +34,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				//"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search&type="+type+"&sessionFlag="+sessionFlag,
+				"sAjaxSource" : actionUrl,
 				//"dom" : 'T<"clear">rt',				
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
@@ -68,6 +74,7 @@
 					{"data": "categoryDes", "defaultContent" : ''},
 					{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
 					{"data": "normalDelivery", "defaultContent" : '',"className" : 'td-center'},
+					{"data": "issues", "defaultContent" : '',"className" : ''},
 					{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				],
 				"columnDefs":[
@@ -87,10 +94,10 @@
 		    				dn = '***';
 		    			return dn;
                     }},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			return "<a href=\"#\" onClick=\"doPurchasePlan('" + row["supplierID"] + "')\">采购下单</a>";
                     }},
-                    {"bSortable": false, "aTargets": [ 0,8 ] 
+                    {"bSortable": false, "aTargets": [ 0,8,9 ] 
                     }
 			           
 			     ] ,
@@ -118,7 +125,10 @@
 	}
 
 	$(document).ready(function() {
+		
 		initEvent();
+
+		buttonSelectedEvent();//按钮选择式样
 		
 	})	
 	
@@ -194,6 +204,16 @@
 		
 	}
 	
+	function doSelectId(issues){
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
+
+		$('#issuesFlag').val(issues);//	
+		
+		ajax('','false');
+	}
+
+	
 </script>
 
 </head>
@@ -204,9 +224,11 @@
 
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
+			<input type="hidden" id="issuesFlag" value="" />
+			
 			<table>
 				<tr>
-					<td width="10%"></td> 
+					<td width="50px"></td> 
 					<td class="label">关键字1：</td>
 					<td class="condition">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/>
@@ -218,7 +240,18 @@
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" style="width:50px" value="查询" onClick="doSearch();"/>查询
 					</td>
-					<td width="10%"></td> 
+					<td width=""></td> 
+				</tr><tr>
+					<td width=""></td> 
+					<td class="label"> 供应商问题：</td>
+					<td colspan="3">
+						<c:forEach var='list' items='${issuesBtList}' varStatus='status'>
+								<a id="defutBtnu${list.key }" style="height: 15px;margin-top: 5px;" 
+									class="DTTT_button box" onclick="doSelectId('${list.value }');">
+									<span>${list.value }</span></a>
+						</c:forEach>
+					</td>
+					
 				</tr>
 			</table>
 
@@ -242,14 +275,15 @@
 				<thead>
 					<tr>
 						<th style="width:30px;">No</th>
-						<th style="width:120px;">供应商编码</th>
-						<th style="width:60px;" >简称</th>
+						<th style="width:80px;">供应商编码</th>
+						<th style="width:50px;" >简称</th>
 						<th>供应商名称</th>
-						<th style="width:50px;">物料分类</th>
-						<th style="width:150px;">分类解释</th>
+						<th style="width:50px;">分类</th>
+						<th style="width:80px;">分类解释</th>
 						<th style="width:50px;">付款条件</th>
 						<th style="width:50px;">正常交期</th>
-						<th style="width:50px;">操作</th>
+						<th style="width:150px;">供应商问题</th>
+						<th style="width:50px;">采购</th>
 					</tr>
 				</thead>
 

@@ -41,11 +41,11 @@
 				"stateSave" :false,
 	         	"bAutoWidth":false,
 				"pagingType" : "full_numbers",
-		       	"sScrollY"	: "300px",
-		        "sScrollX": "100%",
-		        "sScrollXInner": "110%",
-		        "bScrollCollapse": true,		        
-		       	"fixedColumns":   { leftColumns: 2 },
+		       	//"sScrollY"	: "300px",
+		        //"sScrollX": "100%",
+		        //"sScrollXInner": "110%",
+		        //"bScrollCollapse": true,		        
+		       	//"fixedColumns":   { leftColumns: 2 },
 	         	//"aaSorting": [[ sortCode, "ASC" ]],
 				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -163,10 +163,10 @@
 		    			
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){//备齐时间
-		    			var ready = row['readyDate'];
+		    			var readyDate = row['readyDate'];
 		    			var flag = row['finishFlag'];
 		    			var rtnValue = ''
-		    			if(ready == ''){
+		    			if(readyDate == ''){
 		    				if(flag == 'B'){
 
 		    					rtnValue = '已入库';	
@@ -175,10 +175,10 @@
 		    				}
 		    			}else{
 		    				var today = shortToday();
-		    				if(ready < today)
-		    					rtnValue = '<span class="error">'+ready+'</span>';
+		    				if(readyDate < today)
+		    					rtnValue = '<span class="error">'+readyDate+'</span>';
 		    				else
-		    					rtnValue = 	ready;
+		    					rtnValue = 	readyDate;
 		    				
 		    			}
 		    			
@@ -233,6 +233,29 @@
 		    			return rtn;
                     }},
 		    		{"targets":12,"render":function(data, type, row){//ON,OFF
+		    		
+		    			var rtn = "";
+		    			var rowIndex = row["rownum"] - 1;
+		    			var startFlag = row['startFlag'];
+		    			var YSId = row['YSId'];
+
+		    			var selected = '';
+		    			if(startFlag == 'Y'){
+		    				selected = 'selected';
+		    			}
+		    			var txt = '<select  name="lines['+rowIndex+'].important"  '+
+		    				' id="lines'+rowIndex+'.important" '+
+		    				' onchange="doUpdateStartFlag(this.value,\''+YSId+'\',\''+rowIndex+'\')"   '+
+		    				' class="short" style="text-align: center;width: 50px;"> '+
+		    				' <option value=\'N\'>OFF</option>  '+
+						    ' <option '+selected+' value=\'Y\'>ON</option> '+
+		    				' </select> ';
+		    			
+			    		rtn = txt;
+		    			
+		    			return rtn;
+		    			
+		    			/*
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var startFlag = row['startFlag'];
@@ -251,6 +274,7 @@
 	    				}
 		    			
 		    			return rtn;
+		    			*/
 		    		}},
 		    		{"targets":11,"render":function(data, type, row){
 		    			var rtn = "";
@@ -260,7 +284,7 @@
 		    			var txt = '<select  name="lines['+rowIndex+'].produceFilter"  '+
 		    				' id="lines'+rowIndex+'.produceFilter" '+
 		    				' onchange="setProduceLineForOption(this.value,\''+YSId+'\',\''+rowIndex+'\')"   '+
-		    				' class="short option" style="text-align: center;"></select>'
+		    				' class="short option" style="text-align: center;width: 65px;"></select>'
 		    			
 		    
 			    		rtn = txt;
@@ -680,7 +704,7 @@
 		});
 	}
 	
-	function doUpdateStartFlag(YSId,startFlag) {
+	function doUpdateStartFlag(startFlag,YSId,index) {
 		
 		produceLine = encodeURI(encodeURI(produceLine));
 		jQuery.ajax({
@@ -782,16 +806,16 @@
 					<tr>
 						<th style="width: 1px;">No</th>
 						<th style="width: 70px;">耀升编号</th>
-						<th style="width: 150px;">产品编号</th>
+						<th style="width: 100px;">产品编号</th>
 						<th>产品名称</th>
 						<th style="width: 40px;">客户</th>
-						<th style="width: 70px;">订单数量</th>
-						<th style="width: 60px;">订单交期</th>
+						<th style="width: 50px;">订单数量</th>
+						<th style="width: 50px;">订单交期</th>
 						<th style="width: 60px;">装配物料<br/>备齐时间</th>
-						<th style="width: 50px;">生产<br/>序号</th>
+						<th style="width: 50px;">生产线</th>
 						<th style="width: 50px;">生产<br/>小组</th>
-						<th style="width: 70px;">调整</th>
-						<th style="width: 60px;">完成/异常</th>
+						<th style="width: 50px;">调整</th>
+						<th style="width: 50px;">完成<br/>异常</th>
 						<th style="width: 40px;">ON/OFF</th>
 					</tr>
 				</thead>

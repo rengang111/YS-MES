@@ -5,8 +5,9 @@
     <name value="supplierquerydefine_search" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
-   	  <w name="A.type" des=""  reqName="type" dtype="ch" oper="like"  lg="AND" bt="" />   
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />   
+   	  <w name="A.type"   des=""  reqName="type"     dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.issues" des=""  reqName="issues" dtype="ch" oper="like"  lg="AND" bt="" />   
     </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -25,10 +26,63 @@
       <f name="A.address" alias="" ctype="" />
       <f name="A.userName" alias="" ctype="" />
       <f name="A.type" alias="" ctype="" />
+      <f name="A.issues" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_SupplierBasicInfo as A WHERE A.DeleteFlag = '0' </from>
+    <from>
+		(
+			SELECT
+				main.recordId AS recordId,
+				main.supplierId AS supplierID,
+				main.remarks,
+				main.normalDelivery,
+				main.maxDelivery,
+				main.shortName AS shortName,
+				main.supplierName AS supplierName,
+				main.categoryId AS categoryId,
+				main.categoryDes AS categoryDes,
+				main.paymentTerm AS paymentTerm,
+				main.country AS country,
+				main.province AS province,
+				main.city AS city,
+				main.address AS address,
+				main.createTime AS CREATETIME,
+				main.createPerson AS CREATEPERSON,
+				main.createUnitId AS CREATEUNITID,
+				main.modifyTime AS MODIFYTIME,
+				main.modifyPerson AS MODIFYPERSON,
+				main.type AS type,
+				main.deleteFlag AS DELETEFLAG,
+				main.issues,
+				group_concat(b_contact.userName SEPARATOR ',') AS userName,
+				b_contact.id AS userId,
+				b_contact.mobile AS mobile,
+				b_contact.phone AS phone,
+				b_contact.fax AS fax,
+				ucase(
+					concat_ws(
+						'',
+						main.supplierId,
+						main.shortName,
+						main.supplierName,
+						main.categoryId,
+						main.categoryDes,
+						main.paymentTerm,
+						main.address,
+						group_concat(
+							b_contact.userName SEPARATOR ','
+						)
+					)
+				) AS full_field
+			FROM			 
+				b_supplier main
+				LEFT JOIN b_contact ON  b_contact.companyCode = main.supplierId AND b_contact.DELETEFLAG = '0' 
+			WHERE
+				main.deleteFlag = '0'
+			GROUP BY
+			main.supplierId 
+		) as A WHERE A.DeleteFlag = '0' </from>
     <orderby>A.supplierID, A.supplierName</orderby>
     <groupby></groupby>
     <having></having>

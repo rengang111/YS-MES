@@ -73,9 +73,53 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
  
 });
 
+	function keyPointFn(){
+		
+		$("#plan\\.pointdate").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		}); 
+
+		$("#plan\\.pointdate").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		});
+		
+		$("#plan\\.pointdate").val(shortToday());
+		
+	
+		var pointFlag = '${reviewForm.plan.keypoint}';
+		var pointdate = '${reviewForm.plan.pointdate}';
+		var remarks   = '${reviewForm.plan.pointremarks}';
+
+		if(pointFlag == 'Y'){
+			//有卡点			
+			$("#pointDate").text(pointdate);
+			$("#pointRemarks").html((remarks));
+			
+			$('#plan\\.pointremarks').val(replaceTextarea(remarks));
+			
+			$('#pointShowFlag').show();
+			$('#pointEditFlag').hide();
+			$('#doCreate').hide();
+		}else{
+			//无卡点
+			$('#pointShowFlag').hide();
+			$('#pointEditFlag').hide();			
+		}
+	}
 
 
 	$(document).ready(function() {		
+		
+		
+		keyPointFn();
 		
 		contractInfo();//合同信息	
 				
@@ -87,6 +131,12 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 			var url = '${ctx}/business/orderTrack?methodtype=orderTrackingSearchInit';
 	
 			location.href = url;		
+		});
+		
+		$("#doCreate").click(function() {
+
+			$('#pointEditFlag').show();	
+			$('#doCreate').hide();			
 		});
 		
 		var table = $('#contract').DataTable();
@@ -162,6 +212,19 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		{"targets":2,"render":function(data, type, row){	 			
 	    			return jQuery.fixedWidth(row["materialName"],48);	
 	    		}},
+	    		{"targets":5,"render":function(data, type, row){	 			
+	    			var rtn= "<a href=\"###\" onClick=\"doShowWaitIn('" + row["materialId"] +"')\">" + data + "</a>";
+	      			
+	    			return rtn;
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){	 			
+	    			var rtn = "";
+	    			var mate = row["materialId"];
+	    			var qty= floatToCurrency(data);
+	    			rtn= "<a href=\"###\" onClick=\"doShowWaitOut('" + row["materialId"] +"')\">" + data + "</a>";
+	    						    			
+	    			return rtn;
+	    		}},
 	    		{
 					"visible" : false,
 					"targets" : []
@@ -196,6 +259,20 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		
 		
 	}//库存页面
+	
+
+	function doShowWaitOut(materialId) {
+
+		var url = '${ctx}/business/inventory?methodtype=planAndStockOut&materialId=' + materialId;
+		callProductDesignView("待出数量",url);
+		
+	}
+	function doShowWaitIn(materialId) {
+
+		var url = '${ctx}/business/inventory?methodtype=contractAndStockIn&materialId=' + materialId;
+		callProductDesignView("待入数量",url);
+		
+	}
 	
 </script>	
 
@@ -753,7 +830,95 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 						
 		});	
 	}
+	
+	function doEditPoint(){
+		$('#pointShowFlag').hide();
+		$('#pointEditFlag').show();		
+		$('#doCreate').hide();
+	}
+	
+	function doCansolPoint(){
+		$('#pointShowFlag').show();
+		$('#pointEditFlag').hide();		
+		$('#doCreate').show();
+	}
+
+	function doDeletePoint(){
+	
+		var YSId  = '${order.YSId}';
 		
+		if(confirm('确定要取消卡点吗？')){		
+
+			var par = "&YSId=" + YSId;
+			$.ajax({
+				contentType : 'application/json',
+				dataType : 'json',						
+				type : "POST",
+				data : "",// 要提交的表单						
+				url : "${ctx}/business/orderTrack?methodtype=doCansolPoint"+par,
+				success : function(d) {	
+
+					$("#pointdate").text('');
+					$("#pointRemarks").html('');
+					
+					$('#pointShowFlag').hide();
+					$('#pointEditFlag').hide();	
+					
+					$("#plan\\.pointremarks").val('');
+					$("#plan\\.pointdate").val('');
+					
+					$().toastmessage('showWarningToast', "删除成功。");
+
+					$('#doCreate').show();				
+					
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					
+					alert("发生系统异常，，请再试或者联系管理员。");
+				}
+			});	
+		}
+	}
+
+	
+	function doSavePoint(){
+
+		var YSId  = '${order.YSId}';		
+		var par = "&YSId=" + YSId;
+		$.ajax({
+			//"contentType"	: "application/json; charset=utf-8",
+			"dataType" 		: 'json',						
+			"type" 			: "POST",
+			"data" 			: $('#reviewForm').serialize(),// 要提交的表单
+			"url" 			: "${ctx}/business/orderTrack?methodtype=doSavePoint"+par,
+			success : function(data) {	
+				
+				var message = data['message'];
+				if(message == '操作成功'){
+					$().toastmessage('showWarningToast', "卡点已保存。");
+
+					var remarks = $("#plan\\.pointremarks").val();
+
+					$("#pointdate").text($("#plan\\.pointdate").val());
+					$("#pointRemarks").html(replaceTextarea2(remarks));
+					
+					$('#pointShowFlag').show();
+					$('#pointEditFlag').hide();	
+				}else{
+					
+					$().toastmessage('showWarningToast', "卡点保存失败，请联系管理员。");					
+				}
+
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				
+				//发生系统异常，请再试或者联系管理员。
+				alert("发生系统异常，，请再试或者联系管理员。");
+			}
+		});
+	}
+		
+	
 </script>
 
 
@@ -762,8 +927,8 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 <div id="container">
 <!--主工作区,编辑页面或查询显示页面-->
 <div id="main">
-	<form:form modelAttribute="attrForm" method="POST"
-		id="attrForm" name="attrForm"  autocomplete="off">		
+	<form:form modelAttribute="reviewForm" method="POST"
+		id="reviewForm" name="reviewForm"  autocomplete="off">		
 		
 		<input type="hidden" id="tmpMaterialId" />
 		<input type="hidden" id="backFlag"  value="${backFlag }"/>
@@ -818,7 +983,30 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				</tr>							
 			</table>
 		</fieldset>
-		
+		<fieldset>
+			<span class="tablename"> 卡点信息</span>
+			<a id="doCreate" href="###" >新建卡点</a>
+			<table id="" class="form" style="width: 90%;">
+				<tr style="height: 20px;">
+					<th style="width: 150px;">新建时间</th>
+					<th>备注信息</th>
+					<th style="width: 150px;">操作</th>
+				</tr>
+				<tr id="pointShowFlag" style="text-align: center;">
+					<td><span id="pointDate"></span></td>
+					<td><span id="pointRemarks"></span></td>
+					<td><a id="a1" onclick="doEditPoint();return false;" href="###" >编辑</a>&nbsp;&nbsp;
+						<a id="a2" onclick="doDeletePoint();return false;" href="###" >删除</a></td>
+				</tr>
+				<tr id="pointEditFlag" style="text-align: center;">
+					<td><form:input path="plan.pointdate" class="read-only"/></td>
+					<td><form:textarea path="plan.pointremarks" style="width: 500px; height: 60px;"/></td>
+					<td><a id="doCansol" onclick="doCansolPoint()" href="###" >取消</a>
+						<a id="submit"  onclick="doSavePoint();return false;" href="###" >保存</a>
+						</td>
+				</tr>
+			</table>
+		</fieldset>
 		
 		<fieldset style="">
 			<legend> 合同信息</legend>			 
@@ -853,7 +1041,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 			</div>
 		</fieldset>
 		<fieldset style="">
-			<legend> 库存页面</legend>
+			<legend> BOM页面</legend>
 			<div class="list">
 				<table id="storage" class="display" >
 					<thead>				
