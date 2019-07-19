@@ -179,8 +179,11 @@ public class SupplierAction extends BaseAction {
 	
 	public void doInsert(){
 		
-		service.insertAndView();
-		
+		try {
+			service.insertAndView();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}	
 	
 	public void doShowDetailById(){

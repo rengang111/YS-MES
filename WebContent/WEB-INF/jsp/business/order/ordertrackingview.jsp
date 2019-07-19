@@ -506,7 +506,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				if(wjmax < today)
 					$('#wjmax').addClass('error');
 			}else{
-				wjmax = '已入库';				
+				wjmax = '已备齐';				
 			}
 				
 		}
@@ -521,7 +521,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				if(dzmax < today)
 					$('#dzmax').addClass('error');	
 			}else{
-				dzmax = '已入库';
+				dzmax = '已备齐';
 			}
 	
 		}
@@ -535,7 +535,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				if(zzmax < today)
 					$('#zzmax').addClass('error');	
 			}else{
-				zzmax = '已入库';
+				zzmax = '已备齐';
 			}			
 		}
 		
@@ -548,15 +548,15 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		var zpList =  new Array();
 		var index = 0;
 
-		if(wjmax != '***' && wjmax != '已入库'){
+		if(wjmax != '***' && wjmax != '已备齐'){
 			zpList[index] = wjmax;
 			index++;
 		}
-		if(zzmax != '***' && zzmax != '已入库'){
+		if(zzmax != '***' && zzmax != '已备齐'){
 			zpList[index] = zzmax;
 			index++;
 		}
-		if(dzmax != '***' && dzmax != '已入库'){
+		if(dzmax != '***' && dzmax != '已备齐'){
 			zpList[index] = dzmax;
 			index++;
 		}
@@ -567,7 +567,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 			if(zpmax < today)
 				$('#zpmax').addClass('error');	
 		}else{
-			zpmax = '已入库';
+			zpmax = '已备齐';
 		}
 
 		$('#zpmax').text(zpmax);
@@ -789,7 +789,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		var YSId  = '${order.YSId}';
 		
 		var zpmax =$('#zpmax').text();
-		if(zpmax != '已入库'){
+		if(zpmax != '已备齐'){
 			$().toastmessage('showWarningToast', "物料未备齐。");
 			return;
 		}

@@ -505,12 +505,6 @@ function inputDateInit(){
 					<td class="label" width="100px">名称：</td> 
 					<td>${formModel.supplier.suppliername}</td>
 				</tr>
-				<tr>	
-					<td class="label" width="100px">物料分类：</td> 
-					<td>${formModel.supplier.categoryid}</td>
-					<td class="label" width="100px">分类解释：</td> 
-					<td colspan=3>${formModel.supplier.categorydes}</td>				
-				</tr>
 				<tr>
 					<td class="label">详细地址： </td>
 					<td colspan=3>${formModel.supplier.address}</td>
@@ -518,9 +512,15 @@ function inputDateInit(){
 					<td class="label" width="100px">付款条件：</td>
 					<td>发票后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
 				</tr>
+				<tr>	
+					<td class="label" width="100px">供应商类别：</td> 
+					<td>${type}</td>
+					<td class="label" width="100px">供货料件分类：</td> 
+					<td colspan=3>${purchaseType}</td>				
+				</tr>
 				<tr>
 					<td class="label">正常交期： </td>
-					<td colspan=3>&nbsp;${formModel.supplier.normaldelivery}&nbsp;天</td>
+					<td colspan=3>${formModel.supplier.normaldelivery}&nbsp;天</td>
 	
 					<td class="label" width="100px">最长交期：</td>
 					<td>&nbsp;${formModel.supplier.maxdelivery}&nbsp;天</td>

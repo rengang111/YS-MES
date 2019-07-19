@@ -115,8 +115,8 @@
 		    		{"targets":2,"render":function(data, type, row){
 
 						var lastHide = '<input type="hidden"  name="lastHide" id="lastHide" value="' + row["hideFlag"] + '" /></span';
-		    			
-		    			return data + lastHide;
+						var link = "<a href=\"###\" onClick=\"doShowOrderTrack('"+ row["YSId"] + "')\">"+data+"</a>";
+		    			return link + lastHide;
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
@@ -480,6 +480,14 @@
 		var virtualClass = $('#virtualClass').val();
 		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
 		callWindowFullView('出库详情',url);		
+	};
+	
+	function doShowOrderTrack(YSId) {
+
+		var url = '${ctx}/business/orderTrack?methodtype=orderTrackingShow&YSId=' 
+				+ YSId;
+
+		callWindowFullView("订单跟踪",url);	
 	};
 	
 	function doShowDetail(YSId) {

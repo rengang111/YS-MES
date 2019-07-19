@@ -6,8 +6,11 @@
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />   
-   	  <w name="A.type"   des=""  reqName="type"     dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="A.issues" des=""  reqName="issues" dtype="ch" oper="like"  lg="AND" bt="" />   
+   	  
+   	  <w name="LENGTH(A.purchaseType)"    des=""  reqName="purchaseTypeLength" dtype="int" oper="&lt;" lg="AND" bt="" />
+   	  <w name="IFNULL(A.purchaseType,'')" des=""  reqName="purchaseType"       dtype="ch" oper="="     lg="AND" bt="" />
+   	 
+   	  <w name="LENGTH(A.issues)"          des=""  reqName="issues"             dtype="int" oper="&gt;" lg="AND" bt="" />   
     </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -27,6 +30,7 @@
       <f name="A.userName" alias="" ctype="" />
       <f name="A.type" alias="" ctype="" />
       <f name="A.issues" alias="" ctype="" />
+      <f name="A.purchaseType" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -55,6 +59,7 @@
 				main.type AS type,
 				main.deleteFlag AS DELETEFLAG,
 				main.issues,
+				main.purchaseType,
 				group_concat(b_contact.userName SEPARATOR ',') AS userName,
 				b_contact.id AS userId,
 				b_contact.mobile AS mobile,

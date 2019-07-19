@@ -4,7 +4,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-
+<style>
+body{
+  font-size:11px;
+}
+</style>
 <title>订单跟踪</title>
 <script type="text/javascript">
 
@@ -82,8 +86,9 @@
 					{"data": null, "className" : 'td-center'},//5:备齐时间
 					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//6
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
-					{"data": "team", "defaultContent" : '', "className" : 'td-center'},//8
-					{"data": null, "defaultContent" : '', "className" : 'td-center'},//9
+					{"data": "pointRemarks", "defaultContent" : '', "className" : ''},//8
+					{"data": "team", "defaultContent" : '', "className" : 'td-center'},//9
+					{"data": null, "defaultContent" : '', "className" : 'td-center'},//10
 					
 				],
 				"columnDefs":[
@@ -92,7 +97,7 @@
 
 						var lastCheceked = '<span id=""  style="display:none" class="orderHide"><input type="checkbox"  name="orderHide" id="orderHide" value="" /></span';
 
-		    			return data + lastCheceked;
+		    			return row["rownum"];;
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
@@ -109,7 +114,7 @@
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
-		    			name = jQuery.fixedWidth(name,42);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,32);//true:两边截取,左边从汉字开始
 		    			
 		    			var lastCheceked = '<input type="hidden"  name="lastCheceked" id="lastCheceked" value="' + row["lastCheceked"] + '" />';
 		    			
@@ -122,7 +127,7 @@
 		    			if(readyDate == ''){
 		    				if(flag == 'B'){
 
-		    					rtnValue = '已入库';	
+		    					rtnValue = '已备齐';	
 		    				}else{
 		    					rtnValue = '未知';			    					
 		    				}
@@ -140,7 +145,7 @@
 		    		{"targets":6,"render":function(data, type, row){
 		    			return floatToNumber(data);
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":10,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var importantFlag = row['importantFlag'];
@@ -484,14 +489,15 @@
 			<table id="TMaterial" class="display" >
 				<thead>						
 					<tr>
-						<th style="width: 40px;">型号</th>
-						<th style="width: 70px;">耀升编号</th>
-						<th style="width: 120px;">产品编号</th>
-						<th>产品名称</th>
+						<th style="width: 1px;">No</th>
+						<th style="width: 60px;">耀升编号</th>
+						<th style="width: 100px;">产品编号</th>
+						<th style="width: 80px;">产品名称</th>
 						<th style="width: 40px;">客户</th>
 						<th style="width: 60px;">装配物料<br/>备齐时间</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 50px;">订单交期</th>
+						<th>卡点</th>
 						<th style="width: 50px;">业务组</th>
 						<th style="width: 50px;">重要性</th>
 					</tr>

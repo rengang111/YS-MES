@@ -109,10 +109,35 @@ public class SupplierService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
-		String issuesFlag = request.getParameter("issuesFlag");
-		if(notEmpty(issuesFlag))
-				issuesFlag = URLDecoder.decode(issuesFlag,"utf-8");
-		userDefinedSearchCase.put("issues", issuesFlag);
+		String searchType = request.getParameter("searchType");
+		//String issuesFlag = request.getParameter("issuesFlag");
+		
+		if(("I").equals(searchType)){
+			//问题供应商
+			userDefinedSearchCase.put("issues","1");
+			userDefinedSearchCase.put("purchaseType","");
+			userDefinedSearchCase.put("purchaseTypeLength","");
+			
+		}else if(("A").equals(searchType)){
+			//ALL
+			userDefinedSearchCase.put("issues","");
+			userDefinedSearchCase.put("purchaseType","");
+			userDefinedSearchCase.put("purchaseTypeLength","");
+			
+		}else if(("U").equals(searchType)){
+			//未分类
+			userDefinedSearchCase.put("issues","");
+			userDefinedSearchCase.put("purchaseType","");
+			userDefinedSearchCase.put("purchaseTypeLength","1");
+			
+		}else{
+			//物料分类
+			userDefinedSearchCase.put("issues","");
+			userDefinedSearchCase.put("purchaseType",searchType);
+			userDefinedSearchCase.put("purchaseTypeLength","");
+			
+		}
+		
 		
 		if(type == null || type.equals("")){
 			userDefinedSearchCase.put("keyword1", key1);
@@ -147,8 +172,9 @@ public class SupplierService extends CommonService {
 
 		try {			
 			reqModel.setCountryList(getProvinceList());
-			reqModel.setTypeList(util.getListOption(DicUtil.SUPPLIER_TYPE, ""));	
+			reqModel.setTypeList(util.getListOption(DicUtil.SUPPLIER_TYPE, ""));
 			model.addAttribute("issuesList",getListCheckBox(DicUtil.SUPPLIERISSUES, ""));
+			model.addAttribute("purchaseType",util.getListOptionAddDefault2(DicUtil.SUPPLIER_MATERIALTYPE, ""));
 
 		}
 		catch(Exception e) {
@@ -159,13 +185,16 @@ public class SupplierService extends CommonService {
 	
 	}
 
-	public void insertAndView() {
+	public void insertAndView() throws Exception {
 		
-		insertSupplier();
+		String key = insertSupplier();
+
+		getSupplierBaseInfo(key);
 		
 	}
-	public void insertSupplier() {
+	public String insertSupplier() {
 
+		String recodeId = "";
 		try {
 			
 			B_SupplierData reqData = reqModel.getSupplier();
@@ -174,6 +203,7 @@ public class SupplierService extends CommonService {
 			
 			if (dbData != null && dbData.getRecordid() != "") {
 				//更新处理
+				recodeId = dbData.getRecordid();
 				copyProperties(dbData,reqData);
 				
 				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -191,15 +221,18 @@ public class SupplierService extends CommonService {
 
 				guid = BaseDAO.getGuId();
 				reqData.setRecordid(guid);
+				recodeId = reqData.getRecordid();
 				
 				dao.Create(reqData);
 				
 			}
-			reqModel.setSupplier(reqData);
+			//reqModel.setSupplier(reqData);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
+		
+		return recodeId;
 	}	
 
 	
@@ -273,9 +306,9 @@ public class SupplierService extends CommonService {
 
 		String key = request.getParameter("key");
 		getSupplierBaseInfo(key);
-
 		
 		model.addAttribute("issuesList",getListCheckBox(DicUtil.SUPPLIERISSUES, ""));
+		model.addAttribute("purchaseType",util.getListOptionAddDefault2(DicUtil.SUPPLIER_MATERIALTYPE, ""));
 	}
 	
 	public Model getSupplierBaseInfo(String key) throws Exception {
@@ -295,6 +328,15 @@ public class SupplierService extends CommonService {
 			String[] issuesList = dbData.getIssues().split(",");
 			reqModel.setIssuesList(issuesList);
 		}
+		
+		model.addAttribute("type",
+				DicUtil.getDicName(
+						DicUtil.SUPPLIER_TYPE,
+						dbData.getType()));
+		model.addAttribute("purchaseType",
+				DicUtil.getDicName(
+						DicUtil.SUPPLIER_MATERIALTYPE,
+						dbData.getPurchasetype()));
 		
 		model.addAttribute(reqModel);
 		

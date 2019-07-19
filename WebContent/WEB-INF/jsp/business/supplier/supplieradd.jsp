@@ -199,19 +199,19 @@ function doDelete() {
 			</tr>		
 			<tr>
 				<td class="label">所在省份：</td>
-				<td width="150px">
+				<td width="250px">
 					<form:select path="supplier.province" style="width:120px">
 						<form:options items="${formModel.countryList}" itemValue="key"
 							itemLabel="value" />
 					</form:select></td>
-				<td class="label">所属城市：</td>
+				<td width="100px"class="label">所属城市：</td>
 				<td width="150px"> 
 					<form:select path="supplier.city" style="width:120px">
 						<form:options items="${formModel.provinceList}" itemValue="key"
 							itemLabel="value" />
 					</form:select></td>
 				<td class="label" width="100px">供应商简称：</td> 
-				<td width="150px">
+				<td>
 					<form:input path="supplier.shortname" class="short" style="text-transform:uppercase;"/></td>
 			</tr>
 			<tr>
@@ -222,17 +222,25 @@ function doDelete() {
 			<tr>
 			
 				<td class="label" width="100px">供应商名称：</td> 
-				<td colspan="5">
+				<td  colspan="5">
 					<form:input path="supplier.suppliername" class="long" /></td>					
 			</tr>
 			<tr>			
 				<td class="label" width="100px">供应商类别：</td>
-				<td colspan="5">
+				<td>
 					<form:select path="supplier.type" style="width:120px">
 						<form:options items="${formModel.typeList}" itemValue="key"
 							itemLabel="value" />
-					</form:select></td>			
+					</form:select></td>	
+				<td class="label" width="100px">供货料件分类：</td> 
+				<td colspan="3">
+					<form:select path="supplier.purchasetype" style="width:120px">
+						<form:options items="${purchaseType}" 
+							itemValue="key"
+							itemLabel="value" />
+					</form:select></td>
 			</tr>
+			<!--
 			<tr>	
 				<td class="label" width="100px">物料分类：</td> 
 				<td>
@@ -242,6 +250,7 @@ function doDelete() {
 					<form:input path="supplier.categorydes" class="middle read-only" /></td>
 
 			</tr>
+			-->
 			<tr>	
 				<td class="label" width="100px">付款条件：</td>
 				<td colspan="5">&nbsp;发票后<form:input path="supplier.paymentterm" class="small num" />天</td>			

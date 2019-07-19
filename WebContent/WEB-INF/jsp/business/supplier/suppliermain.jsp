@@ -14,11 +14,13 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var issuesFlag = encodeURI(encodeURI($('#issuesFlag').val()));
+		var issuesFlag = $('#issuesFlag').val();//	
+		var searchType = $('#searchType').val();
 		
 		var actionUrl = "${ctx}/business/supplier?methodtype=search&type="+type+"&sessionFlag="+sessionFlag;
 		
 		actionUrl += "&issuesFlag="+issuesFlag;
+		actionUrl += "&searchType="+searchType;
 
 		var t = $('#TSupplier').DataTable({
 				"paging": true,
@@ -98,7 +100,11 @@
 		    			return "<a href=\"#\" onClick=\"doPurchasePlan('" + row["supplierID"] + "')\">采购下单</a>";
                     }},
                     {"bSortable": false, "aTargets": [ 0,8,9 ] 
-                    }
+                    },
+		    		{
+						"visible" : false,
+						"targets" : [6,7]
+					}
 			           
 			     ] ,
 			     "aaSorting": [[ 4, "asc" ]]
@@ -204,11 +210,22 @@
 		
 	}
 	
-	function doSelectId(issues){
+	function doSearchCurrentTask(type){
 		//$('#keyword1').val('');
 		//$('#keyword2').val('');
 
-		$('#issuesFlag').val(issues);//	
+		$('#searchType').val(type);//	
+		
+		ajax('','false');
+	}
+	
+
+	function doSearchCurrentTask2(type){
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
+
+		$('#searchType').val(type);//	
+		$('#issuesFlag').val('Y');//问题供应商
 		
 		ajax('','false');
 	}
@@ -224,7 +241,8 @@
 
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-			<input type="hidden" id="issuesFlag" value="" />
+			<input type="hidden" id="issuesFlag" value="" /><!-- 问题供应商 -->
+			<input type="hidden" id="searchType" value="" />
 			
 			<table>
 				<tr>
@@ -245,11 +263,12 @@
 					<td width=""></td> 
 					<td class="label"> 供应商问题：</td>
 					<td colspan="3">
-						<c:forEach var='list' items='${issuesBtList}' varStatus='status'>
-								<a id="defutBtnu${list.key }" style="height: 15px;margin-top: 5px;" 
-									class="DTTT_button box" onclick="doSelectId('${list.value }');">
-									<span>${list.value }</span></a>
-						</c:forEach>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('A');"   id="defutBtnA">ALL</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('ZZ');"   id="defutBtnZZ">自制</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('WJ');"   id="defutBtnWJ">五金</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('DZ');"   id="defutBtnDZ">电子</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('U');"   id="defutBtnU">未归类</a>&nbsp;
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('I');"   id="defutBtnI">问题供应商</a>
 					</td>
 					
 				</tr>
@@ -259,14 +278,15 @@
 	</div>
 	<div  style="height:10px"></div>
 
-	<div class="list">
-
-			<div id="DTTT_container" align="left" style="height:40px;width:50%">
-				<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('010');">物料供应商</a>
-				<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('020');">模具供应商</a>
-				<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('030');">设备供应商</a>
-			</div>
-			<div id="DTTT_container" align="right" style="height:40px;margin-top: -40px;">
+		<div class="list">
+				<!-- 
+				<div id="DTTT_container" align="left" style="height:40px;width:50%">
+					<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('010');">物料供应商</a>
+					<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('020');">模具供应商</a>
+					<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('030');">设备供应商</a>
+				</div>
+				 -->
+			<div id="DTTT_container" align="right" style="height:40px;margin-bottom: -10px;">
 				<a class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
 				<a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
 			</div>

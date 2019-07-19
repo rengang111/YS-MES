@@ -58,6 +58,7 @@ public class DicUtil {
 	public static final String DENOMINATIONCURRENCY = "币种";
 	public static final String SHIPPINGCASE = "出运条件";
 	public static final String SUPPLIER_TYPE = "供应商类型";
+	public static final String SUPPLIER_MATERIALTYPE = "供应商物料类别";
 	public static final String MOULDBELONG = "模具归属";
 	public static final String RECEIVEINSPECTION = "进料检验结果";
 	public static final String DIC_CHARGERTYPE = "充电器";
@@ -256,4 +257,37 @@ public class DicUtil {
 		
 		return rtnData;
 	}
+	
+	public ArrayList<ListOption> getListOptionAddDefault2(String type, String parentCode) throws Exception {
+		DicUtil util = new DicUtil();
+		ArrayList<ArrayList<String>> dicList = null;
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		dicList = util.getSameParentGroupValue(type, parentCode, false);
+		ListOption option = new ListOption("","***");
+		rtnData.add(option);
+		for(ArrayList<String>rowData:dicList) {
+			option = new ListOption(rowData.get(0), rowData.get(1));
+			rtnData.add(option);
+		}
+		
+		return rtnData;
+	}
+	
+	public static String getDicName(String type, String code) throws Exception {
+		DicUtil util = new DicUtil();
+		String dicName = null;
+		
+		ArrayList<ArrayList<String>> dicList = 
+				util.getSameParentGroupValue(type, "", false);
+
+		for(ArrayList<String>rowData:dicList) {
+			if(code.equals(rowData.get(0))){
+				dicName = rowData.get(1);
+				break;
+			}
+		}		
+		return dicName;
+	}
+	
 }
